@@ -45,7 +45,7 @@ public class AST implements Application, Identifier, Abstraction {
                 rightstr = this.right.AbstoString(ctx);
                 break;
         }
-        return leftstr + " " + rightstr;
+        return "("+leftstr + " " + rightstr+")";
     }
 
     //return the correct index of param or free variable
@@ -57,7 +57,7 @@ public class AST implements Application, Identifier, Abstraction {
     //return lambda expression by recursion
     public String AbstoString(ArrayList<String> ctx) {
         if(this.type==Node.Abstraction&&this.param==null)return "";
-        StringBuilder temp = new StringBuilder("(\\" + this.param.toString() + ". ");
+        StringBuilder temp = new StringBuilder("\\" + this.param.toString() + ".");
         ArrayList<String> tmp = new ArrayList<String>();
         switch (this.body.type) {
             case Application:
@@ -76,7 +76,7 @@ public class AST implements Application, Identifier, Abstraction {
                 temp.append(this.body.AbstoString(tmp));
                 break;
         }
-        return temp.append(")").toString();
+        return temp.toString();
     }
     String finaltoString(ArrayList<String> ctx){
         if(this.type==Node.Application)return this.ApptoString(ctx);

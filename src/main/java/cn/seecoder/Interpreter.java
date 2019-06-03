@@ -12,21 +12,35 @@ public class Interpreter {
     public AST cal(AST ast) {
         while (true) {
             if (ast.type == AST.Node.Application) {
-                if(ast.left.value==-1&&ast.right.value==-1)break;
-                if ((isValue(ast.left) && isValue(ast.right))||
-                        (isValue(ast.left)&&ast.right.value==-1)) {
-                    ast = substitute(ast.right, ast.left.body);
-                }                               //if both are value,substitute & check subtree(unlock)
-                else if (isValue(ast.left))
-                    ast.right = cal(ast.right);//calculus right tree by recursion
-                else
-                    ast.left = cal(ast.left);  //the left tree
+                if(ast.left.type==AST.Node.Application) {
+                    ast.left = cal(ast.left);
+                    if (ast.left.type == AST.Node.Application)
+                        return ast;
+                }
+                else if(ast.left.type==AST.Node.Abstraction){
+                    if(ast.right.type==AST.Node.Application)
+                        ast.right=cal(ast.right);
+                    ast=substitute(ast.right,ast.left.body);
+                }
+                else{
+                    if(ast.right.type==AST.Node.Application){
+                        ast.right=cal(ast.right);
+                        return ast;
+                    }
+                    else if(ast.right.type==AST.Node.Abstraction){
+                        ast.right=cal(ast.right);
+                        return ast;
+                    }
+                    else return ast;
+                }
             }
-            else if (isValue(ast))
+            else if (isValue(ast)) {
+                ast.body=cal(ast.body);
                 return ast;
+            }
             else if(ast.value==-1)return ast;
+            else return ast;
         }
-        return ast;
     }
 
     //
@@ -70,7 +84,7 @@ public class Interpreter {
     private AST operate(AST value, AST node, int depth) {
         if (node.type == AST.Node.Identifier) {
             if (depth == node.value)
-                return shift(depth, value, depth);
+                return shift(depth, value, 0);
             else return node;
         } else if (node.type == AST.Node.Application)
             return new AST(

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Index {
     public static void main(String[] args) {
-        String source = "(\\f.\\x.x f) a (\\x.x)";
+        String source = "(\\n.\\f.\\x.f(n f x))(\\f.\\x.f x)";
         Lexer lexer = new Lexer(source);
         Parser parser = new Parser(lexer);
         AST ast = parser._Set();
